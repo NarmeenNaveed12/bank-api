@@ -33,9 +33,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
-            if(StringUtils.isEmpty(token)){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Access token is missing or invalid");
-           }
+//            if(StringUtils.isEmpty(token)){
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Access token is missing or invalid");
+//           }
+            if (StringUtils.isEmpty(token)) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Access token is invalid");
+                return;
+            }
             String userId = jwtUtil.validateTokenAndGetUserId(token);
 
             if (userId != null) {

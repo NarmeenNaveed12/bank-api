@@ -3,7 +3,11 @@ package com.example.BarclaysTest.util;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -36,5 +40,13 @@ public class JwtUtil {
 //    Without it, the server has no standard clue what kind of authentication is being used.
     public String getTokenFromHeader(String authHeader){
         return (authHeader != null && authHeader.startsWith("Bearer ")) ? authHeader.substring(7) : null ;
+    }
+
+    public static String getAuthenticatedUserId() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getPrincipal() instanceof String) {
+            return (String) auth.getPrincipal();
+        }
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Access token is missing or invalid");
     }
 }

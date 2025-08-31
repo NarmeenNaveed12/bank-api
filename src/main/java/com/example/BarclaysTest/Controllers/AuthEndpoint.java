@@ -5,6 +5,8 @@ import com.example.BarclaysTest.model.Authentication.AuthRequest;
 import com.example.BarclaysTest.model.Authentication.AuthResponse;
 import com.example.BarclaysTest.model.ErrorModel.ErrorResponse;
 import com.example.BarclaysTest.util.JwtUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Description;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/v1/auth")  // base path for this controller
+@Tag(name = "auth")
 public class AuthEndpoint {
     @Autowired
     private JwtUtil jwtUtil;
@@ -25,12 +28,7 @@ public class AuthEndpoint {
     private UserService userService;
 
     @PostMapping
-    @Description("Authenticate a new user")
-    //if u pass just id, it passes like an object so cannot map to the string in map key{
-    //  "userId": "usr-123abc"
-    //}
-    //u need to pass as an object
-//    JwtAuthFilter runs on /v1/auth
+    @Operation(summary = "Authenticate a new user")
     public ResponseEntity<?> authenticateUser(@RequestBody @NotNull AuthRequest authRequest){
         String userId = authRequest.id;
         if(!userService.isUserCreated(userId)){

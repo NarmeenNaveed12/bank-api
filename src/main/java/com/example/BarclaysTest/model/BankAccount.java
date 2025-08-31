@@ -7,9 +7,15 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.example.BarclaysTest.model.TransactionType.DEPOSIT;
 
 @Getter
 @Setter
@@ -25,13 +31,31 @@ public class BankAccount {
     public String name;
     public AccountType accountType;
 
-    @NotNull(message = "Amount is required")
-    @DecimalMin(value = "0.00", inclusive = true, message = "Balance must be at least 0.00")
-    @DecimalMax(value = "10000.00", inclusive = true, message = "Balance must not more than 10000.00")
+    @NotNull
     public double balance;
     public Currency currency;
     public LocalDateTime createdTimestamp;
     public LocalDateTime updatedTimestamp;
     @Pattern(regexp = "usr-[A-Za-z0-9]+", message = "unique id")
     public String userId;
+    private final List<Transaction> transactions = new ArrayList<>();
+
+    public void depositMoney(double amount, Transaction transaction){
+        if(this.balance + amount > 10000.00 ){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "");
+        }
+        this.balance += amount;
+        transactions.add(transaction);
+    }
+
+    public void withDrawMoney(double amount, Transaction transaction){
+        if(this.balance < amount){
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Insufficient funds to process transaction");
+        }
+        if(this.balance - amount < 0.00 ){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "");
+        }
+        this.balance -= amount;
+        transactions.add(transaction);
+    }
 }

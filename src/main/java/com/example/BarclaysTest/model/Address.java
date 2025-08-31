@@ -16,5 +16,7 @@ public class Address {
     public String county;
     @NotBlank
     public String postCode;
+    public String addressLine2;
+    public String addressLine3;
 
 }

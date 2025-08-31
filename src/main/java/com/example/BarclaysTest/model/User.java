@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -16,5 +18,6 @@ public class User {
     @Pattern(regexp = "^\\+[1-9]\\d{1,14}$", message = "unique id")
     public String phoneNumber;
     public String email;
+    public List<BankAccount> bankAccounts;
 
 }

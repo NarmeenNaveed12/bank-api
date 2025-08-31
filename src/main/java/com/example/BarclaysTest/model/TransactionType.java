@@ -1,8 +1,11 @@
 package com.example.BarclaysTest.model;
 
-public enum TransactionType {
-    DEPOSIT("deposit"), WITHDRAWL("withdrawl");
+import jakarta.validation.constraints.NotBlank;
 
+public enum TransactionType {
+    DEPOSIT("deposit"), WITHDRAWAL("withdrawal");
+
+    @NotBlank
     private String value;
 
 
