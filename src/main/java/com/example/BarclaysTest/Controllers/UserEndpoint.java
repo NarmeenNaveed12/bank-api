@@ -30,27 +30,19 @@ public class UserEndpoint {
 
     @PostMapping
     @Operation(summary = "Create a new user")
-    public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserRequest userRequest){
-        ResponseEntity responseEntity = null;
-        String userId = userService.generateUserId();
-        if(!userService.isUserCreated(userId)) {
-                User user = userService.createUser(userRequest,userId);
-                UserResponse response = new UserResponse(user);
-                return ResponseEntity.status(HttpStatus.CREATED).body(response); //201 RESPONSE
-        }
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody CreateUserRequest userRequest){
+        //Handle exception for is user is already created
+         User user = userService.createUser(userRequest);
+         UserResponse response = new UserResponse(user);
+         return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
-        return responseEntity;
     }
-
-
-
-
 
     @GetMapping("/{userId}")
     @Operation(summary ="Fetch user by ID")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<?> fetchUserByID(
-            @PathVariable  @Pattern(regexp = "usr-[A-Za-z0-9]+") String userId) throws Exception {
+    public ResponseEntity<UserResponse> fetchUserByID(
+            @PathVariable  @Pattern(regexp = "usr-[A-Za-z0-9]+") String userId) {
         String authenticatedUserId = getAuthenticatedUserId();
         User user = userService.getUserIfAuthorized(userId,authenticatedUserId);
         UserResponse userResponse = new UserResponse(user);
@@ -60,8 +52,8 @@ public class UserEndpoint {
     @PatchMapping("/{userId}")
     @Operation(summary ="Update user by ID.")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<?> updateUserByID(
-            @PathVariable @Pattern(regexp = "usr-[A-Za-z0-9]+") String userId, @RequestBody UpdateUserRequest request) throws Exception {
+    public ResponseEntity<UserResponse> updateUserByID(
+            @PathVariable @Pattern(regexp = "usr-[A-Za-z0-9]+") String userId, @RequestBody UpdateUserRequest request) {
         String authenticatedUserId = getAuthenticatedUserId();
         User user = userService.updateUserDetails(userId,authenticatedUserId,request);
         UserResponse userResponse = new UserResponse(user);
@@ -72,7 +64,7 @@ public class UserEndpoint {
     @Operation(summary ="Delete user by ID")
     @SecurityRequirement(name = "bearerAuth")
     public void deleteUserByID(
-            @PathVariable @Pattern(regexp = "usr-[A-Za-z0-9]+") String userId) throws Exception {
+            @PathVariable @Pattern(regexp = "usr-[A-Za-z0-9]+") String userId){
         String authenticatedUserId = getAuthenticatedUserId();
         userService.deleteUser(userId,authenticatedUserId);
     }

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+import static com.example.BarclaysTest.util.BankServiceUtil.buildUser;
+
 @Service
 public class UserService {
 
@@ -27,15 +29,9 @@ public class UserService {
        return usersCreated.getOrDefault(userId, null);
     }
 
-    public User createUser(CreateUserRequest userRequest, String userId){
-        User user = User.builder()
-                        .id(userId)
-                        .name(userRequest.getName())
-                        .address(userRequest.getAddress())
-                        .phoneNumber(userRequest.getPhoneNumber())
-                        .email(userRequest.getEmail()).build();
-
-        usersCreated.put(userId,user);
+    public User createUser(CreateUserRequest userRequest){
+        User user = buildUser(userRequest);
+        usersCreated.put(user.getId(),user);
         return user;
 
     }
@@ -52,11 +48,6 @@ public class UserService {
 
     public boolean isCorrectUser(String userId, String authenticatedUserId){
         return Objects.equals(authenticatedUserId, userId);
-    }
-
-    // format: ^usr-[A-Za-z0-9]+$
-    public String generateUserId(){
-        return "usr-" + UUID.randomUUID().toString().substring(0, 8);
     }
 
     public User updateUserDetails(String userId, String authUserId, UpdateUserRequest request){

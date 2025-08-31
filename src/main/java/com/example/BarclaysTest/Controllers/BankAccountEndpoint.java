@@ -17,13 +17,10 @@ import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.example.BarclaysTest.util.JwtUtil.getAuthenticatedUserId;
@@ -41,7 +38,7 @@ public class BankAccountEndpoint {
     @PostMapping
     @Operation(summary="Create a new bank account")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<?> createAccount(@RequestBody @NotNull CreateBankAccountRequest request){
+    public ResponseEntity<BankAccountResponse> createAccount(@RequestBody @NotNull CreateBankAccountRequest request){
         String authenticatedUserId = getAuthenticatedUserId();
          BankAccount bankAccount = bankService.createBankAccount(request,authenticatedUserId);
          BankAccountResponse bankAccountResponse = new BankAccountResponse(bankAccount);
@@ -52,7 +49,7 @@ public class BankAccountEndpoint {
     @GetMapping
     @Operation(summary="List accounts")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<?> listBankAccounts(){
+    public ResponseEntity<List<BankAccountResponse>> listBankAccounts(){
 
         String authenticatedUserId = getAuthenticatedUserId();
         List<BankAccount> bankAccounts = bankService.listBankAccounts(authenticatedUserId);
@@ -61,31 +58,25 @@ public class BankAccountEndpoint {
 
     }
 
-    @GetMapping("/{accountId}")
+    @GetMapping("/{accountNumber}")
     @Operation(summary="Fetch account by account number")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<?> fetchAccountByAccountNumber(
+    public ResponseEntity<BankAccountResponse> fetchAccountByAccountNumber(
             @PathVariable
             @NotBlank
-            @Pattern(regexp = "^01\\d{6}$") String accountId){
+            @Pattern(regexp = "^01\\d{6}$") String accountNumber){
 
         String authenticatedUserId = getAuthenticatedUserId();
-            BankAccount bankAccount = bankService.fetchAccountByAccountNumber(accountId);
-            if(bankAccount == null){
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Bank account was not found");
-            }
-            if(!Objects.equals(bankAccount.getUserId(), authenticatedUserId)){
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The user is not allowed to access the bank account details");
-            }
-            BankAccountResponse bankAccountResponse = new BankAccountResponse(bankAccount);
-            return ResponseEntity.status(HttpStatus.OK).body(bankAccountResponse); //200 RESPONSE
+        BankAccount bankAccount = bankService.fetchAccountByAccountNumber(accountNumber,authenticatedUserId);
+        BankAccountResponse bankAccountResponse = new BankAccountResponse(bankAccount);
+        return ResponseEntity.status(HttpStatus.OK).body(bankAccountResponse); //200 RESPONSE
 
     }
 
-    @PostMapping("/{accountId}/transactions")
+    @PostMapping("/{accountNumber}/transactions")
     @Operation(summary="Create a new transaction")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<?> createTransaction(
+    public ResponseEntity<TransactionResponse> createTransaction(
             @PathVariable
             @Pattern(regexp = "^01\\d{6}$") String accountNumber,
             @RequestBody CreateTransactionRequest request){
@@ -93,14 +84,14 @@ public class BankAccountEndpoint {
         String authenticatedUserId = getAuthenticatedUserId();
         Transaction transaction = bankService.createTransaction(accountNumber,request,authenticatedUserId);
         TransactionResponse transactionResponse = new TransactionResponse(transaction);
-        return ResponseEntity.status(HttpStatus.CREATED).body(transactionResponse); //200 RESPONSE
+        return ResponseEntity.status(HttpStatus.CREATED).body(transactionResponse);
 
     }
 
-    @GetMapping("/{accountId}/transactions/{transactionId}")
+    @GetMapping("/{accountNumber}/transactions/{transactionId}")
     @Operation(summary="Fetch transaction by ID")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<?> fetchAccountTransactionByID(
+    public ResponseEntity<TransactionResponse>fetchAccountTransactionByID(
             @PathVariable
             @Pattern(regexp = "^01\\d{6}$") String accountNumber,
             @PathVariable @Pattern(regexp = "^tan-[A-Za-z0-9]$") String transactionId){
@@ -108,13 +99,13 @@ public class BankAccountEndpoint {
         String authenticatedUserId = getAuthenticatedUserId();
         Transaction transaction = bankService.fetchTransactionById(authenticatedUserId,accountNumber,transactionId);
         TransactionResponse transactionResponse = new TransactionResponse(transaction);
-        return ResponseEntity.status(HttpStatus.CREATED).body(transactionResponse); //200 RESPONSE
+        return ResponseEntity.status(HttpStatus.OK).body(transactionResponse);
     }
 
-    @PatchMapping("/{accountId}")
+    @PatchMapping("/{accountNumber}")
     @Operation(summary="Update account by account number")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<?> updateAccountByAccountNumber(
+    public ResponseEntity<BankAccountResponse> updateAccountByAccountNumber(
             @PathVariable
             @Pattern(regexp = "^01\\d{6}$") String accountNumber,
             @RequestBody UpdateBankAccountRequest request){
@@ -124,7 +115,7 @@ public class BankAccountEndpoint {
         return ResponseEntity.status(HttpStatus.OK).body(bankAccountResponse); //200 RESPONSE
     }
 
-    @DeleteMapping("/{accountId}")
+    @DeleteMapping("/{accountNumber}")
     @Operation(summary="Delete account by account number")
     @SecurityRequirement(name = "bearerAuth")
     public void deleteAccountByAccountNumber(
