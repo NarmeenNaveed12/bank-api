@@ -16,13 +16,12 @@ import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static com.example.BarclaysTest.util.JwtUtil.getAuthenticatedUserId;
 
 @RestController
 @Tag(name = "account")
@@ -38,7 +37,7 @@ public class BankAccountEndpoint {
     @Operation(summary="Create a new bank account")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<BankAccountResponse> createAccount(@RequestBody @Valid CreateBankAccountRequest request){
-        String authenticatedUserId = getAuthenticatedUserId();
+        String authenticatedUserId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
          BankAccount bankAccount = bankService.createBankAccount(request,authenticatedUserId);
          BankAccountResponse bankAccountResponse = new BankAccountResponse(bankAccount);
          return ResponseEntity.status(HttpStatus.CREATED).body(bankAccountResponse);
@@ -50,7 +49,7 @@ public class BankAccountEndpoint {
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<List<BankAccountResponse>> listBankAccounts(){
 
-        String authenticatedUserId = getAuthenticatedUserId();
+        String authenticatedUserId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<BankAccount> bankAccounts = bankService.listBankAccounts(authenticatedUserId);
         List<BankAccountResponse> bankAccountResponse = bankAccounts.stream().map(bankAccount -> new BankAccountResponse(bankAccount)).collect(Collectors.toList());
         return ResponseEntity.status(HttpStatus.OK).body(bankAccountResponse);
@@ -64,7 +63,7 @@ public class BankAccountEndpoint {
             @PathVariable
             @Pattern(regexp = "^01\\d{6}$") String accountNumber){
 
-        String authenticatedUserId = getAuthenticatedUserId();
+        String authenticatedUserId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         BankAccount bankAccount = bankService.fetchAccountByAccountNumber(accountNumber,authenticatedUserId);
         BankAccountResponse bankAccountResponse = new BankAccountResponse(bankAccount);
         return ResponseEntity.status(HttpStatus.OK).body(bankAccountResponse); //200 RESPONSE
@@ -80,7 +79,7 @@ public class BankAccountEndpoint {
             @Valid
             @RequestBody CreateTransactionRequest request){
 
-        String authenticatedUserId = getAuthenticatedUserId();
+        String authenticatedUserId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Transaction transaction = bankService.createTransaction(accountNumber,request,authenticatedUserId);
         TransactionResponse transactionResponse = new TransactionResponse(transaction);
         return ResponseEntity.status(HttpStatus.CREATED).body(transactionResponse);
@@ -95,7 +94,7 @@ public class BankAccountEndpoint {
             @Pattern(regexp = "^01\\d{6}$") String accountNumber,
             @PathVariable @Pattern(regexp = "^tan-[A-Za-z0-9]+$") String transactionId){
 
-        String authenticatedUserId = getAuthenticatedUserId();
+        String authenticatedUserId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Transaction transaction = bankService.fetchTransactionById(authenticatedUserId,accountNumber,transactionId);
         TransactionResponse transactionResponse = new TransactionResponse(transaction);
         return ResponseEntity.status(HttpStatus.OK).body(transactionResponse);
@@ -109,7 +108,7 @@ public class BankAccountEndpoint {
             @Pattern(regexp = "^01\\d{6}$") String accountNumber,
             @Valid
             @RequestBody UpdateBankAccountRequest request){
-        String authenticatedUserId = getAuthenticatedUserId();
+        String authenticatedUserId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         BankAccount bankAccount = bankService.updateBankAccountDetails(accountNumber,authenticatedUserId,request);
         BankAccountResponse bankAccountResponse = new BankAccountResponse(bankAccount);
         return ResponseEntity.status(HttpStatus.OK).body(bankAccountResponse); //200 RESPONSE
@@ -121,7 +120,7 @@ public class BankAccountEndpoint {
     public void deleteAccountByAccountNumber(
             @PathVariable
             @Pattern(regexp = "^01\\d{6}$") String accountNumber){
-        String authenticatedUserId = getAuthenticatedUserId();
+        String authenticatedUserId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         bankService.deleteBankAccount(authenticatedUserId,accountNumber);
     }
 }

@@ -1,7 +1,8 @@
 package com.example.BarclaysTest.config;
 
+import com.example.BarclaysTest.model.ErrorModel.ErrorResponse;
 import com.example.BarclaysTest.util.JwtUtil;
-import io.micrometer.common.util.StringUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,8 +25,9 @@ import java.util.List;
 //You don’t want your JWT validation code to run multiple times for the same request
 public class JwtAuthFilter extends OncePerRequestFilter {
 
+    private final JwtUtil jwtUtil;
     @Autowired
-    private JwtUtil jwtUtil;
+    private ObjectMapper objectMapper;
 
     //TODO: Fix this, handle expcetion and check pre authorize
     @Override
@@ -33,13 +35,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
-            if (token.isBlank()) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Access token is missing or invalid");
+            if (token.isEmpty()) {
+                writeErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");
+                return;
             }
 
             String userId = jwtUtil.validateTokenAndGetUserId(token);
             if (userId == null) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired token");
+                writeErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Access token is missing or invalid");
+                return;
             }
              UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(userId, null, List.of());
@@ -48,5 +52,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private void writeErrorResponse(HttpServletResponse response,
+                                    int status,
+                                    String message) throws IOException {
+        response.setStatus(status);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        ErrorResponse error = new ErrorResponse(message);
+        response.getWriter().write(objectMapper.writeValueAsString(error));
     }
 }

@@ -13,10 +13,9 @@ import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import static com.example.BarclaysTest.util.JwtUtil.getAuthenticatedUserId;
 
 @RestController
 @RequestMapping("/v1/users")
@@ -43,7 +42,7 @@ public class UserEndpoint {
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<UserResponse> fetchUserByID(
             @PathVariable  @Pattern(regexp = "usr-[A-Za-z0-9]+") String userId) {
-        String authenticatedUserId = getAuthenticatedUserId();
+        String authenticatedUserId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.getUserIfAuthorized(userId,authenticatedUserId);
         UserResponse userResponse = new UserResponse(user);
         return ResponseEntity.status(HttpStatus.OK).body(userResponse);
@@ -54,7 +53,7 @@ public class UserEndpoint {
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<UserResponse> updateUserByID(
             @PathVariable @Pattern(regexp = "usr-[A-Za-z0-9]+") String userId, @RequestBody UpdateUserRequest request) {
-        String authenticatedUserId = getAuthenticatedUserId();
+        String authenticatedUserId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.updateUserDetails(userId,authenticatedUserId,request);
         UserResponse userResponse = new UserResponse(user);
         return ResponseEntity.status(HttpStatus.OK).body(userResponse);
@@ -65,7 +64,7 @@ public class UserEndpoint {
     @SecurityRequirement(name = "bearerAuth")
     public void deleteUserByID(
             @PathVariable @Pattern(regexp = "usr-[A-Za-z0-9]+") String userId){
-        String authenticatedUserId = getAuthenticatedUserId();
+        String authenticatedUserId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         userService.deleteUser(userId,authenticatedUserId);
     }
 
