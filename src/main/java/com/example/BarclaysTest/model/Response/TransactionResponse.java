@@ -13,8 +13,8 @@ public class TransactionResponse {
     private TransactionType type;
     private double amount;
     private LocalDateTime createdTimestamp;
-    private String reference; //optional
-    private String userId; //optional
+    private String reference;
+    private String userId;
 
     public TransactionResponse(Transaction transaction){
         this.id = transaction.getId();
