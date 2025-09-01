@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<ErrorResponse> unExpectedError(ResponseStatusException e){
+    public ResponseEntity<ErrorResponse> responseEntityException(ResponseStatusException e){
         ErrorResponse error = new ErrorResponse(e.getReason());
         return ResponseEntity.status(e.getStatusCode()).body(error);
     }

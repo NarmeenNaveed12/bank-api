@@ -27,27 +27,24 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtil jwtUtil;
 
+    //TODO: Fix this, handle expcetion and check pre authorize
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        System.out.println("JWT filter executed");
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
-//            if(StringUtils.isEmpty(token)){
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Access token is missing or invalid");
-//           }
-            if (StringUtils.isEmpty(token)) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("Access token is invalid");
-                return;
+            if (token.isBlank()) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Access token is missing or invalid");
             }
-            String userId = jwtUtil.validateTokenAndGetUserId(token);
 
-            if (userId != null) {
-                UsernamePasswordAuthenticationToken authToken =
+            String userId = jwtUtil.validateTokenAndGetUserId(token);
+            if (userId == null) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired token");
+            }
+             UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(userId, null, List.of());
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-            }
+
         }
 
         filterChain.doFilter(request, response);

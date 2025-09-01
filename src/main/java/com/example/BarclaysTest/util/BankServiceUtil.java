@@ -3,10 +3,12 @@ package com.example.BarclaysTest.util;
 import com.example.BarclaysTest.ExceptionHandler.ForbiddenException;
 import com.example.BarclaysTest.ExceptionHandler.NotFoundException;
 import com.example.BarclaysTest.model.*;
+import com.example.BarclaysTest.model.Requests.CreateBankAccountRequest;
 import com.example.BarclaysTest.model.Requests.CreateTransactionRequest;
 import com.example.BarclaysTest.model.Requests.CreateUserRequest;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.UUID;
 
@@ -39,7 +41,7 @@ public  class BankServiceUtil {
     public static Transaction buildTransaction(CreateTransactionRequest request, String userId, TransactionType type) {
         // Build the transaction
         Transaction transaction = Transaction.builder()
-                .transactionType(type)
+                .type(type)
                 .id(generateTransactionId()) // or generate inside service
                 .amount(request.getAmount())
                 .currency(Currency.GBP)
@@ -55,9 +57,25 @@ public  class BankServiceUtil {
                 .name(userRequest.getName())
                 .address(userRequest.getAddress())
                 .phoneNumber(userRequest.getPhoneNumber())
+                .bankAccounts(new ArrayList<>())
                 .email(userRequest.getEmail()).build();
-
         return user;
+
+    }
+
+    public static BankAccount buildBankAccount(CreateBankAccountRequest request, String userId, String accountID){
+        BankAccount bankAccount = BankAccount.builder()
+                .userId(userId)
+                .accountNumber(accountID)
+                .name(request.getName())
+                .accountType(request.getAccountType())
+                .balance(0.0)
+                .sortCode(SortCode.TEN_TEN_TEN)
+                .name(request.name)
+                .currency(Currency.GBP)
+                .createdTimestamp(LocalDateTime.now())
+                .updatedTimestamp(LocalDateTime.now()).build();
+        return bankAccount;
 
     }
 }

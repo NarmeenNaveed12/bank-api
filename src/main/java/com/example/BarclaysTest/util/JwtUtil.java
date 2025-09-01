@@ -42,6 +42,8 @@ public class JwtUtil {
         return (authHeader != null && authHeader.startsWith("Bearer ")) ? authHeader.substring(7) : null ;
     }
 
+
+    //if the change works then remove this and just get user id in endpoints
     public static String getAuthenticatedUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getPrincipal() instanceof String) {

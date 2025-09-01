@@ -1,5 +1,6 @@
 package com.example.BarclaysTest.Controllers;
 
+import com.example.BarclaysTest.ExceptionHandler.NotFoundException;
 import com.example.BarclaysTest.Service.UserService;
 import com.example.BarclaysTest.model.Authentication.AuthRequest;
 import com.example.BarclaysTest.model.Authentication.AuthResponse;
@@ -29,11 +30,10 @@ public class AuthEndpoint {
 
     @PostMapping
     @Operation(summary = "Authenticate a new user")
-    public ResponseEntity<?> authenticateUser(@RequestBody @NotNull AuthRequest authRequest){
-        String userId = authRequest.id;
+    public ResponseEntity<AuthResponse> authenticateUser(@RequestBody AuthRequest authRequest){
+        String userId = authRequest.getId();
         if(!userService.isUserCreated(userId)){
-            ErrorResponse errorResponse = new ErrorResponse("User not created, cannot authenticate");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+            throw new NotFoundException("User not found");
         }
            String token = "Bearer " + jwtUtil.generateToken(userId);
            return ResponseEntity.ok(new AuthResponse(token));

@@ -2,6 +2,7 @@ package com.example.BarclaysTest.model.Requests;
 
 import com.example.BarclaysTest.model.Currency;
 import com.example.BarclaysTest.model.TransactionType;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 public class CreateTransactionRequest {
     @NotNull
     public Currency currency;
+    @JsonProperty("type")
     @NotNull
     public TransactionType transactionType;
     @NotNull

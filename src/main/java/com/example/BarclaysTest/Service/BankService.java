@@ -1,9 +1,7 @@
 package com.example.BarclaysTest.Service;
 
-import com.example.BarclaysTest.ExceptionHandler.ConflictException;
 import com.example.BarclaysTest.ExceptionHandler.NotFoundException;
 import com.example.BarclaysTest.model.*;
-import com.example.BarclaysTest.model.Currency;
 import com.example.BarclaysTest.model.Requests.CreateBankAccountRequest;
 import com.example.BarclaysTest.model.Requests.CreateTransactionRequest;
 import com.example.BarclaysTest.model.Requests.UpdateBankAccountRequest;
@@ -11,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.example.BarclaysTest.model.TransactionType.*;
@@ -24,29 +20,13 @@ public class BankService {
 
     @Autowired
     UserService userService;
-    //user id and affiliated bank account 1 - many mapping o(1) lookup
-//    private Map<String, List<BankAccount>> userBankAccounts = new HashMap<>();
-    //accountid with affliated bank account 1-1 mapping o(1) lookup
+
     private Map<String, BankAccount> bankAccountWithAcctId = new HashMap<>();
 
     public BankAccount createBankAccount(CreateBankAccountRequest request, String userId){
         String accountId = generateAccountId();
-        BankAccount bankAccount = BankAccount.builder()
-                .userId(userId)
-                .accountNumber(accountId)
-                .name(request.getName())
-                .accountType(request.getAccountType())
-                .balance(0.0)
-                .sortCode(SortCode.TEN_TEN_TEN)
-                .name(request.name)
-                .currency(Currency.GBP)
-                .createdTimestamp(LocalDateTime.now())
-                .updatedTimestamp(LocalDateTime.now()).build();
-
+        BankAccount bankAccount = buildBankAccount(request,userId,accountId);
         User user = userService.fetchUserFromMap(userId);
-//        if (user == null) {
-//            throw new NotFoundException(userId);
-//        }
         user.getBankAccounts().add(bankAccount);
         bankAccountWithAcctId.computeIfAbsent(accountId, k -> bankAccount);
         return bankAccount;
@@ -92,8 +72,8 @@ public class BankService {
         validateBankAccountAndUser(bankAccount, userId, "The user is not allowed to access the bank account details");
 
         return bankAccount.getTransactions().stream()
-                    .filter(a -> a.id.equals(transactionId)).findFirst()
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Transaction id was not found"));
+                    .filter(a -> a.getId().equals(transactionId)).findFirst()
+                    .orElseThrow(() -> new NotFoundException("Transaction id was not found"));
 
     }
 

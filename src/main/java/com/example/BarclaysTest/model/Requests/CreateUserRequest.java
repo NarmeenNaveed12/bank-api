@@ -14,10 +14,11 @@ import lombok.Setter;
 public class CreateUserRequest {
     @NotBlank
     public String name;
+    @NotNull
     @Valid
     public Address address;
     @NotBlank
-    @Pattern(regexp = "^\\+[1-9]\\d{1,14}$", message = "unique id")
+    @Pattern(regexp = "^\\+[1-9]\\d{1,14}$", message = "Phone number must be in the format +1234567890")
     public String phoneNumber;
     @NotBlank
     @Email

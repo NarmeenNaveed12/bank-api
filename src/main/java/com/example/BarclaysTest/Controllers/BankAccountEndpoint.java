@@ -11,8 +11,7 @@ import com.example.BarclaysTest.model.Transaction;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,8 +26,8 @@ import static com.example.BarclaysTest.util.JwtUtil.getAuthenticatedUserId;
 
 @RestController
 @Tag(name = "account")
-@RequestMapping("/v1/accounts")  // base path for this controller
-@Validated //to allow patern to work
+@RequestMapping("/v1/accounts")
+@Validated
 public class BankAccountEndpoint {
 
     @Autowired
@@ -38,11 +37,11 @@ public class BankAccountEndpoint {
     @PostMapping
     @Operation(summary="Create a new bank account")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<BankAccountResponse> createAccount(@RequestBody @NotNull CreateBankAccountRequest request){
+    public ResponseEntity<BankAccountResponse> createAccount(@RequestBody @Valid CreateBankAccountRequest request){
         String authenticatedUserId = getAuthenticatedUserId();
          BankAccount bankAccount = bankService.createBankAccount(request,authenticatedUserId);
          BankAccountResponse bankAccountResponse = new BankAccountResponse(bankAccount);
-         return ResponseEntity.status(HttpStatus.CREATED).body(bankAccountResponse); //201 RESPONSE
+         return ResponseEntity.status(HttpStatus.CREATED).body(bankAccountResponse);
 
     }
 
@@ -63,7 +62,6 @@ public class BankAccountEndpoint {
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<BankAccountResponse> fetchAccountByAccountNumber(
             @PathVariable
-            @NotBlank
             @Pattern(regexp = "^01\\d{6}$") String accountNumber){
 
         String authenticatedUserId = getAuthenticatedUserId();
@@ -79,6 +77,7 @@ public class BankAccountEndpoint {
     public ResponseEntity<TransactionResponse> createTransaction(
             @PathVariable
             @Pattern(regexp = "^01\\d{6}$") String accountNumber,
+            @Valid
             @RequestBody CreateTransactionRequest request){
 
         String authenticatedUserId = getAuthenticatedUserId();
@@ -94,7 +93,7 @@ public class BankAccountEndpoint {
     public ResponseEntity<TransactionResponse>fetchAccountTransactionByID(
             @PathVariable
             @Pattern(regexp = "^01\\d{6}$") String accountNumber,
-            @PathVariable @Pattern(regexp = "^tan-[A-Za-z0-9]$") String transactionId){
+            @PathVariable @Pattern(regexp = "^tan-[A-Za-z0-9]+$") String transactionId){
 
         String authenticatedUserId = getAuthenticatedUserId();
         Transaction transaction = bankService.fetchTransactionById(authenticatedUserId,accountNumber,transactionId);
@@ -108,6 +107,7 @@ public class BankAccountEndpoint {
     public ResponseEntity<BankAccountResponse> updateAccountByAccountNumber(
             @PathVariable
             @Pattern(regexp = "^01\\d{6}$") String accountNumber,
+            @Valid
             @RequestBody UpdateBankAccountRequest request){
         String authenticatedUserId = getAuthenticatedUserId();
         BankAccount bankAccount = bankService.updateBankAccountDetails(accountNumber,authenticatedUserId,request);
