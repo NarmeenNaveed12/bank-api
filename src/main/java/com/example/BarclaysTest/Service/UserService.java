@@ -17,10 +17,8 @@ import static com.example.BarclaysTest.util.BankServiceUtil.buildUser;
 @Service
 public class UserService {
 
-    //check for existing user (not part of req)
-    Map<String, User> usersCreated = new HashMap<>();//as we dont have a db or elase we would have saved there
+    Map<String, User> usersCreated = new HashMap<>(); //as we dont have a db or else we would have saved there
 
-    //check if user is created
     public boolean isUserCreated(String userId){
         return usersCreated.containsKey(userId);
     }

@@ -103,6 +103,7 @@ public class BankAccountEndpointTest {
         ResponseEntity<BankAccountResponse> response = bankAccountEndpoint.createAccount(request);
 
         assertNotNull(response);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals("acc123", response.getBody().getAccountNumber());
         assertEquals("My Account", response.getBody().getName());
         assertEquals(1, testUser.getBankAccounts().size());
@@ -179,7 +180,7 @@ public class BankAccountEndpointTest {
         when(bankService.createTransaction("01234567", request, authenticatedUserId))
                 .thenThrow(new ResponseStatusException(
                         HttpStatus.UNPROCESSABLE_ENTITY,
-                        "Your balance cannot be more than 1000"
+                        "Insufficient funds to process transaction"
                 ));
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () ->
@@ -187,6 +188,6 @@ public class BankAccountEndpointTest {
         );
 
         assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, exception.getStatusCode());
-        assertEquals("Your balance cannot be more than 1000", exception.getReason());
+        assertEquals("Insufficient funds to process transaction", exception.getReason());
     }
 }

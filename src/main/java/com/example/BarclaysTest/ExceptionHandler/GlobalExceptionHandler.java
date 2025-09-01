@@ -15,8 +15,6 @@ import org.springframework.web.server.ResponseStatusException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    //exceptions to handle(200, 201, 400, 401, 403, 404, 409, 422, 500)
-
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> unExpectedError(Exception e){
         e.printStackTrace();

@@ -8,14 +8,13 @@ import com.example.BarclaysTest.model.Requests.CreateTransactionRequest;
 import com.example.BarclaysTest.model.Requests.CreateUserRequest;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Random;
 import java.util.UUID;
 
 public  class BankServiceUtil {
     public static String generateAccountId() {
         Random random = new Random();
-        int sixDigits = random.nextInt(1_000_000); // 0 to 999999
+        int sixDigits = random.nextInt(1_000_000);
         return String.format("01%06d", sixDigits);
     }
 
@@ -42,7 +41,7 @@ public  class BankServiceUtil {
         // Build the transaction
         Transaction transaction = Transaction.builder()
                 .type(type)
-                .id(generateTransactionId()) // or generate inside service
+                .id(generateTransactionId())
                 .amount(request.getAmount())
                 .currency(Currency.GBP)
                 .createdTimestamp(LocalDateTime.now())

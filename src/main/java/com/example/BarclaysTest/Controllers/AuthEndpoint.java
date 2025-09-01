@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/v1/auth")  // base path for this controller
+@RequestMapping("/v1/auth")
 @Tag(name = "auth")
 public class AuthEndpoint {
     @Autowired

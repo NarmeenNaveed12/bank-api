@@ -31,7 +31,7 @@ class AuthControllerTest {
 
 
     @Test
-    void testAuthenticateUser_Success() throws Exception {
+    void testAuthenticateUser_Success(){
 
         when(userService.isUserCreated("usr-123")).thenReturn(true);
         when(jwtUtil.generateToken("usr-123")).thenReturn("mock-jwt");
@@ -42,7 +42,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void testAuthenticateUserNotFound() throws Exception {
+    void testAuthenticateUserNotFound(){
 
         when(userService.isUserCreated("usr-123")).thenReturn(false);
         AuthRequest request = AuthRequest.builder().id("usr-123").build();

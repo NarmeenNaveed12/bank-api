@@ -7,6 +7,7 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+//for swagger purpose
 //Swagger (OpenAPI) doesn’t automatically know you want to pass a Bearer token. You need to configure the security scheme.
 @Configuration
 public class OpenApiConfig {
