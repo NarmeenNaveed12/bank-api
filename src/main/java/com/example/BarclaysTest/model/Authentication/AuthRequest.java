@@ -2,7 +2,6 @@ package com.example.BarclaysTest.model.Authentication;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
