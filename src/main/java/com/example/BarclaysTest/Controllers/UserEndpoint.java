@@ -52,7 +52,7 @@ public class UserEndpoint {
     @Operation(summary ="Update user by ID.")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<UserResponse> updateUserByID(
-            @PathVariable @Pattern(regexp = "usr-[A-Za-z0-9]+") String userId, @RequestBody UpdateUserRequest request) {
+            @PathVariable @Pattern(regexp = "usr-[A-Za-z0-9]+") String userId, @Valid @RequestBody UpdateUserRequest request) {
         String authenticatedUserId = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.updateUserDetails(userId,authenticatedUserId,request);
         UserResponse userResponse = new UserResponse(user);

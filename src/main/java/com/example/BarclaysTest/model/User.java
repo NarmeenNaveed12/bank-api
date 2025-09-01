@@ -9,11 +9,11 @@ import java.util.List;
 @Data
 @Builder
 public class User {
-    public String id;
-    public String name;
-    public Address address;
-    public String phoneNumber;
-    public String email;
-//    @Builder.Default
-    public List<BankAccount> bankAccounts = new ArrayList<>();
+    private String id;
+    private String name;
+    private Address address;
+    private String phoneNumber;
+    private String email;
+    @Builder.Default
+    private List<BankAccount> bankAccounts = new ArrayList<>();
 }

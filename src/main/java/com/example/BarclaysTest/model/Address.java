@@ -9,14 +9,14 @@ import lombok.Setter;
 public class Address {
 
     @NotBlank
-    public String addressLine1;
+    private String addressLine1;
     @NotBlank
-    public String town;
+    private String town;
     @NotBlank
-    public String county;
+    private String county;
     @NotBlank
-    public String postCode;
-    public String addressLine2;
-    public String addressLine3;
+    private String postCode;
+    private String addressLine2;
+    private String addressLine3;
 
 }

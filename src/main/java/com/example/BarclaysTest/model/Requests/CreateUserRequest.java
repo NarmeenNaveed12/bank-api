@@ -13,14 +13,14 @@ import lombok.Setter;
 @Setter
 public class CreateUserRequest {
     @NotBlank
-    public String name;
+    private String name;
     @NotNull
     @Valid
-    public Address address;
+    private Address address;
     @NotBlank
     @Pattern(regexp = "^\\+[1-9]\\d{1,14}$", message = "Phone number must be in the format +1234567890")
-    public String phoneNumber;
+    private String phoneNumber;
     @NotBlank
     @Email
-    public String email;
+    private String email;
 }

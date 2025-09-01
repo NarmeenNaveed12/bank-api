@@ -7,10 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor //for testing
 public class CreateBankAccountRequest {
     @NotBlank
-    public String name;
+    private String name;
     @NotNull
-    public AccountType accountType;
+    private AccountType accountType;
 }

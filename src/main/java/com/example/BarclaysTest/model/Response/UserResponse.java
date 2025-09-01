@@ -7,11 +7,11 @@ import lombok.Getter;
 @Getter
 public class UserResponse {
 
-    public String id;
-    public String name;
-    public Address address;
-    public String phoneNumber;
-    public String email;
+    private String id;
+    private String name;
+    private Address address;
+    private String phoneNumber;
+    private String email;
 
     public UserResponse(User user){
         this.id = user.getId();

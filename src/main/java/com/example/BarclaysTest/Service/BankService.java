@@ -51,14 +51,14 @@ public class BankService {
         BankAccount bankAccount = fetchAccountFromMap(accountId);
         validateBankAccountAndUser(bankAccount, userId, "The user is not allowed to create a transaction for this bank account details");
         Transaction transaction;
-        switch(request.transactionType) {
+        switch(request.getTransactionType()) {
                 case DEPOSIT:
                     transaction = buildTransaction(request, userId, DEPOSIT);
-                    bankAccount.depositMoney(request.amount,transaction);
+                    bankAccount.depositMoney(request.getAmount(),transaction);
                     return transaction;
                 case WITHDRAWAL:
                     transaction = buildTransaction(request, userId, WITHDRAWAL);
-                    bankAccount.withDrawMoney(request.amount,transaction);
+                    bankAccount.withDrawMoney(request.getAmount(),transaction);
                     return transaction;
                 default:
                     break;
@@ -81,8 +81,8 @@ public class BankService {
         BankAccount bankAccount = fetchAccountFromMap(accountNumber);
         validateBankAccountAndUser(bankAccount, userId, "The user is not allowed to update the bank account details");
 
-        bankAccount.setAccountNumber(request.getName());
-        bankAccount.setAccountType(request.accountType);
+        bankAccount.setName(request.getName());
+        bankAccount.setAccountType(request.getAccountType());
 
         return bankAccount;
     }

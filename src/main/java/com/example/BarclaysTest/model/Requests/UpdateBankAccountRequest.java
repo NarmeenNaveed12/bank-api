@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public class UpdateBankAccountRequest {
 
-    public String name;
+    private String name;
     @NotNull
-    public AccountType accountType;
+    private AccountType accountType;
 }

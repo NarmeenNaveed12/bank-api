@@ -3,16 +3,14 @@ package com.example.BarclaysTest.ExceptionHandler;
 import com.example.BarclaysTest.model.ErrorModel.BadRequestErrorResponse;
 import com.example.BarclaysTest.model.ErrorModel.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -21,6 +19,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> unExpectedError(Exception e){
+        e.printStackTrace();
+
         ErrorResponse error = new ErrorResponse("An unexpected error occurred");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
@@ -32,17 +32,17 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<BadRequestErrorResponse> invalidOrMissingData(MethodArgumentNotValidException e, HttpServletRequest request){
-      String requestUri = request.getMethod();
-        if ("POST".equalsIgnoreCase(requestUri)) {
-           BadRequestErrorResponse errorResponse = new BadRequestErrorResponse("Invalid details supplied");
-           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-
+    //for validation and json error
+    @ExceptionHandler({ MethodArgumentNotValidException.class, HttpMessageNotReadableException.class })
+    public ResponseEntity<BadRequestErrorResponse> handleBadRequest(Exception ex, HttpServletRequest request) {
+        String requestMethod = request.getMethod();
+        BadRequestErrorResponse errorResponse;
+        if ("POST".equalsIgnoreCase(requestMethod)) {
+            errorResponse = new BadRequestErrorResponse("Invalid details supplied");
+        } else {
+            errorResponse = new BadRequestErrorResponse("The request didn't supply all the necessary data");
         }
-        BadRequestErrorResponse errorResponse = new BadRequestErrorResponse("The request didn't supply all the necessary data");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-
     }
 
     @ExceptionHandler(NotFoundException.class)
@@ -62,5 +62,6 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
+
 
 }

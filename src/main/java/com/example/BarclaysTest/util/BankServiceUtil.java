@@ -57,7 +57,6 @@ public  class BankServiceUtil {
                 .name(userRequest.getName())
                 .address(userRequest.getAddress())
                 .phoneNumber(userRequest.getPhoneNumber())
-                .bankAccounts(new ArrayList<>())
                 .email(userRequest.getEmail()).build();
         return user;
 
@@ -71,7 +70,7 @@ public  class BankServiceUtil {
                 .accountType(request.getAccountType())
                 .balance(0.0)
                 .sortCode(SortCode.TEN_TEN_TEN)
-                .name(request.name)
+                .name(request.getName())
                 .currency(Currency.GBP)
                 .createdTimestamp(LocalDateTime.now())
                 .updatedTimestamp(LocalDateTime.now()).build();

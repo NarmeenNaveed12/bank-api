@@ -19,15 +19,15 @@ import static com.example.BarclaysTest.model.TransactionType.DEPOSIT;
 @Builder
 public class BankAccount {
 
-    public String accountNumber;
-    public SortCode sortCode;
-    public String name;
-    public AccountType accountType;
-    public double balance;
-    public Currency currency;
-    public LocalDateTime createdTimestamp;
-    public LocalDateTime updatedTimestamp;
-    public String userId;
+    private String accountNumber;
+    private SortCode sortCode;
+    private String name;
+    private AccountType accountType;
+    private double balance;
+    private Currency currency;
+    private LocalDateTime createdTimestamp;
+    private LocalDateTime updatedTimestamp;
+    private String userId;
     private final List<Transaction> transactions = new ArrayList<>();
 
     public void depositMoney(double amount, Transaction transaction){

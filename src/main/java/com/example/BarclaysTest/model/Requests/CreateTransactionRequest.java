@@ -14,14 +14,14 @@ import java.time.LocalDateTime;
 @Getter
 public class CreateTransactionRequest {
     @NotNull
-    public Currency currency;
+    private Currency currency;
     @JsonProperty("type")
     @NotNull
-    public TransactionType transactionType;
+    private TransactionType transactionType;
     @NotNull
     @DecimalMin(value = "0.00", inclusive = true, message = "amount must be at least 0.00")
     @DecimalMax(value = "10000.00", inclusive = true, message = "amount must not more than 10000.00")
-    public double amount;
+    private Double amount;
     private String reference; //optional
 
 }

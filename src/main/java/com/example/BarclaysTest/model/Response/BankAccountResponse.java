@@ -10,14 +10,14 @@ import java.time.LocalDateTime;
 
 @Getter
 public class BankAccountResponse {
-    public String accountNumber;
-    public SortCode sortCode;
-    public String name;
-    public AccountType accountType;
-    public double balance;
-    public Currency currency;
-    public LocalDateTime createdTimestamp;
-    public LocalDateTime updatedTimestamp;
+    private String accountNumber;
+    private SortCode sortCode;
+    private String name;
+    private AccountType accountType;
+    private double balance;
+    private Currency currency;
+    private LocalDateTime createdTimestamp;
+    private LocalDateTime updatedTimestamp;
 
     public BankAccountResponse(BankAccount bankAccount){
         this.accountNumber = bankAccount.getAccountNumber();

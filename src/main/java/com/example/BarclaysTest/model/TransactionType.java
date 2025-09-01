@@ -1,18 +1,17 @@
 package com.example.BarclaysTest.model;
 
-import jakarta.validation.constraints.NotBlank;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum TransactionType {
     DEPOSIT("deposit"), WITHDRAWAL("withdrawal");
 
-    @NotBlank
     private String value;
-
 
     TransactionType(String val) {
         this.value = val;
     }
 
+    @JsonValue
     public String getValue(){
         return value;
     }
